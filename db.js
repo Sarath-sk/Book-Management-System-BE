@@ -1,8 +1,9 @@
 // const {MongoClient, ServerApiVersion} = require('mongodb')
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+require('dotenv').config();
 
 
-const URL = "mongodb+srv://sarath:Sarathsk758@cluster0.7uaqzbt.mongodb.net/?appName=Cluster0";
+const URL = process.env.MONGO_URI;
 
 // const client = new MongoClient(URL)
 
