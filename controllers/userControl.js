@@ -1,6 +1,8 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { default: mongoose } = require("mongoose");
+
 
 
 
@@ -147,5 +149,72 @@ const loginUser = async (req, res) =>{
 
 }
 
+// Update user by user id
+const updateUserById = async (req, res) =>{
+    try{
+        const {id} = req.params;
+        const user = await User.findById(id).select("-password");
 
-module.exports = {createUser, getAllUsers, getUserById, loginUser};
+        if(!mongoose.Types.ObjectId.isValid(id)){
+            res.status(404).json({
+                message: "Invalid user Id"
+            });
+        }
+
+        const updateUser = await User.findByIdAndUpdate(
+            id,
+            {
+                $set: req.body
+            },
+            {
+                new: true,
+                runValidator: true
+            }
+        );
+
+        if(!updateUser){
+            return res.status(404).json({
+                message: "User not found!"
+            });
+        }
+
+        res.status(200).json({
+            message: "User has been updated successfully."
+        });
+    }catch(error){
+        res.status(500).json({
+            message: "Server error, Please try again later",
+            error: error.message
+        });
+    }
+}
+
+//Change Password
+const changePassword = async (req, res) =>{
+    try{
+        const {currentPassword, newPassword} = req.body;
+        const user = await User.findById(req.user.id).select("+password");
+
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
+        if(!isMatch){
+            return res.status(400).json({
+                message: "Current password is incorrect"
+            });
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(newPassword, salt);
+
+        await user.save();
+        res.status(200).json({
+            message: "Password updated successfully."
+        });
+    }catch(error){
+        res.status(500).json({
+            message: error.message
+        });
+    }
+}
+
+
+module.exports = {createUser, getAllUsers, getUserById, loginUser, updateUserById, changePassword};

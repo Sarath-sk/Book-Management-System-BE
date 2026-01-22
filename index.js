@@ -2,6 +2,7 @@ const express = require('express')
 const cors = require("cors")
 const userRouter = require('./routes/UserRoute')
 const booksRouter = require("./routes/BooksRoute")
+const transactionRouter = require("./routes/TransactionRoute")
 require("dotenv").config();
 
 
@@ -26,6 +27,7 @@ app.use(express.json())
 // Routes
 app.use('/user', userRouter);
 app.use('/books', booksRouter);
+app.use('/transactions', transactionRouter);
 
 
 // App listenin port
