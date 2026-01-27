@@ -155,5 +155,30 @@ const removeBook = async (req, res) =>{
     }
 }
 
+const searchBook = async (req, res) =>{
+    try{
+        const {query} = req.query;
+        let findQuery = {};
 
-module.exports = {addBook, getAllBooks, removeBook, getBookById, updateBookById};
+        if(query && query.trim() !== ""){
+            findQuery = {
+                $or: [
+                    {title: {$regex: query, $options: "i"}},
+                    {autor: {$regex: query, $options: "i"}},
+                    {isbn: {$regex: query, $options: "i"}}
+                ]
+            };
+        }
+
+        const books = await Books.find(findQuery);
+        res.status(200).json(books)
+    }catch(error){
+        res.status(500).json({
+            message: "Search failed",
+            error
+        });
+    }
+}
+
+
+module.exports = {addBook, getAllBooks, removeBook, getBookById, updateBookById, searchBook};

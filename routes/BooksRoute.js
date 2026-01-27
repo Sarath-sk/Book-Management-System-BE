@@ -1,5 +1,5 @@
 const express = require('express')
-const {addBook, getAllBooks, removeBook, getBookById, updateBookById} = require("../controllers/booksController")
+const {addBook, getAllBooks, removeBook, getBookById, updateBookById, searchBook} = require("../controllers/booksController")
 const router = express.Router()
 const auth = require("../middleware/auth");
 const adminAuth = require("../middleware/authAdmin");
@@ -8,6 +8,7 @@ const { route } = require('./UserRoute');
 
 //protect API - Admin and Non-admin
 router.get("/allBooks", auth, getAllBooks);
+router.get("/search", auth, searchBook);
 
 
 // protect and admin only API
